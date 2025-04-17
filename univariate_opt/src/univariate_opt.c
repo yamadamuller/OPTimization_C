@@ -14,7 +14,7 @@ struct OptResults gridsearch_1d(double (*opt_fun)(double), double lower_lim, dou
    double opt_value = __FLT_MAX__; //variable to store the minimum value
    double opt_guess = lower_lim; //variable to store the optimum guess
    int num_candidates = ceil((upper_lim-lower_lim)/step); //number of candidate values 
-   for(int i=0; i<=num_candidates;i++){
+   for(int i=0; i<=num_candidates; i++){
         double curr_obj = opt_fun(lower_lim); //compute the objective function for the current guess
 
         //check if the function has the mininum value in the interval
@@ -29,6 +29,45 @@ struct OptResults gridsearch_1d(double (*opt_fun)(double), double lower_lim, dou
    struct OptResults opt_output = {opt_value, opt_guess, num_candidates, NAN, NAN}; //store the results in the opt struct
 
    return opt_output; //return the optimum guess
+}
+
+struct OptResults golden_section_search(double (*opt_fun)(double), double lower_lim, double upper_lim, double tol){
+    /*
+        :param opt_fun: pointer to the objective target function
+        :param lower_lim: lower limit of the search interval
+        :param upper_lim: upper limit of the search interval
+        :param tol: tolerance of the forward error (b-a < tol)
+    */
+
+    double c = (-1+sqrt(5))/2; //constant reduction rate
+    double c_sub = 1-c; //reduction rate subtracted by 1
+    double x1 = lower_lim*c + (upper_lim*c_sub); //first guess of x1
+    double x2 = upper_lim*c + (lower_lim*c_sub); //first guess of x2
+    double h = upper_lim - lower_lim; //forward error
+    int n = (int)(ceil(log(tol/h)/log(c))); //iterations required to convergence
+
+    //gss agorithm
+    for(int i=0; i<n; i++){
+        double fx1 = opt_fun(x1); //evaluate the obj. function at the x1 guess
+        double fx2 = opt_fun(x2); //evaluate the obj. function at the x2 guess
+        
+        //bracketing
+        if(fx1<fx2){
+            upper_lim = x2; //update the upper limit
+            x2 = x1; //comute the guesses
+            x1 = lower_lim*c + upper_lim*c_sub; //update the x1 guess
+        }
+        else{
+            lower_lim = x1; //update the lower limit
+            x1 = x2; //comute the guesses
+            x2 = upper_lim*c + lower_lim*c_sub; //update the x2 guess
+        }
+    }
+
+    double opt_guess = (lower_lim+upper_lim)/2; //optimal guess based on the interval
+    struct OptResults opt_output = {opt_fun(opt_guess), opt_guess, n, NAN, NAN}; //store the results in the opt struct
+
+    return opt_output; //return the optimum guess
 }
 
 double numerical_gradient(double (*opt_fun)(double), double x, double eps){

@@ -11,6 +11,7 @@ struct OptResults
 };
 
 struct OptResults gridsearch_1d(double (*opt_fun)(double), double lower_lim, double upper_lim, double step);
+struct OptResults golden_section_search(double (*opt_fun)(double), double lower_lim, double upper_lim, double tol);
 double numerical_gradient(double (*opt_fun)(double), double x, double eps);
 double numerical_hessian(double (*opt_fun)(double), double x, double eps);
 struct OptResults gradient_descent_1d(double (*opt_fun)(double), double x_guess, double gamma, int max_iter, double tol);
