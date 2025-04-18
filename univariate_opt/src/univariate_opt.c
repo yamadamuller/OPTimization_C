@@ -1,4 +1,5 @@
 #include "univariate_opt.h"
+#include "linalg.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
