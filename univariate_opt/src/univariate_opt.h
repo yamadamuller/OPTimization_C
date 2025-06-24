@@ -16,5 +16,6 @@ double numerical_gradient(double (*opt_fun)(double), double x, double eps);
 double numerical_hessian(double (*opt_fun)(double), double x, double eps);
 struct OptResults gradient_descent_1d(double (*opt_fun)(double), double x_guess, double gamma, int max_iter, double tol);
 struct OptResults newton_1d(double (*opt_fun)(double), double x_guess, int max_iter, double tol);
+struct OptResults quadratic_fit_search(double (*opt_fun)(double), double a, double b, double c, int max_inter, double tol);
 
 #endif

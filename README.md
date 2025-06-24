@@ -9,7 +9,7 @@ cd <optimizer_type>
 
 Then, compile the algorithm file with the main function:
 ```
-g++ -o <executable_name> <algorithm_call_file>.c  ./src/linalg.c ./src/<optimizer_type>.c
+g++ -o <executable_name> <algorithm_call_file>.c ./src/<optimizer_type>.c
 ```
 
 Lastly, run the executable file:

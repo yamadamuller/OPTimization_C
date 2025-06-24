@@ -1,5 +1,4 @@
 #include "univariate_opt.h"
-#include "linalg.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -151,3 +150,65 @@ struct OptResults newton_1d(double (*opt_fun)(double), double x_guess, int max_i
     return opt_output; //return the guess
 }
 
+struct OptResults quadratic_fit_search(double (*opt_fun)(double), double a, double b, double c, int max_inter, double tol){
+    /*
+        :param opt_fun: pointer to the objective target function
+        :param a: lower limit of the search interval
+        :param b: middle limit of the search interval
+        :param c: upper limit of the search interval
+        :param max_iter: maximum iteration of the newton-raphson algorithm
+        :param tol: tolerance of the minimizer
+    */
+    
+    double y_prime = 0; //evaluate the objective function at the guess
+    double num_prime = 0; //numerator of the derivative 
+    double den_prime = 0; //denominator of the derivative
+    double guess_prime = 0; //derivative of the quadratic function
+    int n_iter = 0; //iteration counter
+    double y_a = opt_fun(a); //evaluate the objective function at the lower bracket
+    double y_b = opt_fun(b); //evaluate the objective function at the medium bracket
+    double y_c = opt_fun(c); //evaluate the objective function at the upper bracket
+
+    //evaluate the quadratic function based on the bracket
+    while (abs(c-a)>tol){
+        if (n_iter >= max_inter){
+            break; //break if iterations have surpassed the limit
+        }
+
+        //derivative of the quadratic function
+        num_prime = (y_a*(b*b-c*c) + y_b*(c*c-a*a) + y_c*(a*a-b*b));
+        den_prime = (y_a*(b-c) + y_b*(c-a) + y_c*(a-b));
+        guess_prime = 0.5*num_prime/den_prime; //compute the derivative
+        y_prime = opt_fun(guess_prime); //update the f(q'(x))
+        
+        //bracketing routine
+        if (guess_prime<b){
+            if (y_prime<y_b){
+                c = b; //update the upper limit
+                y_c = y_b; //update the function evaluation at the upper limit
+                b = guess_prime; //update the medium limit
+                y_b = y_prime; //update the function evaluation at the medium limit   
+            }
+            else{
+                a = guess_prime; //update the lower limit
+                y_a = y_prime; //update the function evaluation at the lower limit
+            }
+        }
+        else{
+            if (y_prime<y_b){
+                a = b; //update the lower limit
+                y_a = y_b; //update the function evaluation at the lower limit
+                b = guess_prime; //update the medium limit
+                y_b = y_prime; //update the function evaluation at the medium limit   
+            }
+            else{
+                c = guess_prime; //update the upper limit
+                y_c = y_prime; //update the function evaluation at the upper limit
+            }
+        }
+    }
+
+    struct OptResults opt_output = {y_prime, guess_prime, n_iter, NAN, NAN}; //store the results in the opt struct
+
+    return opt_output; //return the guess    
+}
