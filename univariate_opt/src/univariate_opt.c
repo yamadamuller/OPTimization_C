@@ -216,7 +216,7 @@ struct OptResults quadratic_fit_search(double (*opt_fun)(double), double a, doub
     return opt_output; //return the guess    
 }
 
-float evaluate_sign(double x){
+int evaluate_sign(double x){
     /*
         :param x: the number to yield the sign
     */
