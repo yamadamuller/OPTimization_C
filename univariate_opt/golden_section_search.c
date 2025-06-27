@@ -11,4 +11,5 @@ int main(){
     struct OptResults opt_val = golden_section_search(obj_fun, 1., 6, 1e-5); 
     printf("%f \n", opt_val.opt_guess);
     printf("%f \n", opt_val.fun_eval);
+    printf("%d \n", opt_val.n_iter);
 }

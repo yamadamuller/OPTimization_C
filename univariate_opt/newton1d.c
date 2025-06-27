@@ -11,4 +11,5 @@ int main(){
     struct OptResults opt_val = newton_1d(obj_fun, 1., 30, 1e-5); //compute the min. value
     printf("%f \n", opt_val.opt_guess);
     printf("%f \n", opt_val.fun_eval);
+    printf("%d \n", opt_val.n_iter);
 }

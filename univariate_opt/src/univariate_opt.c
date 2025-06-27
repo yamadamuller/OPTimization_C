@@ -206,9 +206,66 @@ struct OptResults quadratic_fit_search(double (*opt_fun)(double), double a, doub
                 y_c = y_prime; //update the function evaluation at the upper limit
             }
         }
+        
+        n_iter ++; //update the iteration counter
+
     }
 
-    struct OptResults opt_output = {y_prime, guess_prime, n_iter, NAN, NAN}; //store the results in the opt struct
+    struct OptResults opt_output = {opt_fun(guess_prime), guess_prime, n_iter, NAN, NAN}; //store the results in the opt struct
 
     return opt_output; //return the guess    
 }
+
+float evaluate_sign(double x){
+    /*
+        :param x: the number to yield the sign
+    */
+    if(x>0) return 1; //if greater than 0, return +1
+    else if (x<0) return -1; //if lower than 0, return -1
+    else return 0; //if 0, return 0
+    
+}
+
+struct OptResults bissection_method(double (*opt_fun)(double), double lower_lim, double upper_lim, int max_inter, double tol){
+    /*
+        :param opt_fun: pointer to the objective target function
+        :param lower_lim: lower limit of the search interval
+        :param uppper_lim: upper limit of the search interval
+        :param max_iter: maximum iteration of the newton-raphson algorithm
+        :param tol: tolerance of the minimizer
+    */
+    double prime_lower = numerical_gradient(opt_fun, lower_lim, tol); //evaluate the derivative at the lower bracket
+    double prime_upper = numerical_gradient(opt_fun, upper_lim, tol); //evaluate the derivative at the upper bracket
+    double midpoint = (lower_lim+upper_lim)/2; //compute the midpoint to evaluate minima location
+    double prime_mid = numerical_gradient(opt_fun, midpoint, tol); //evaluate the derivative at the midpoint
+    int n_iter = 0; //iteration counter
+    
+    //search for the mininum inside the brackets divided by midpoint
+    while(abs(upper_lim-lower_lim)>tol){
+        if (n_iter >= max_inter){
+            break; //break if iterations have surpassed the limit
+        } 
+        
+        if (prime_mid == 0){
+            break; //in case the midpoint is the minimum itself    
+        }
+
+        if (evaluate_sign(prime_mid) != evaluate_sign(prime_lower)){
+            upper_lim = midpoint; //update so the mininum lies between [mid_point, b]
+            prime_upper = prime_mid; //update the derivative at the upper bracket
+        }
+        else{
+            lower_lim = midpoint; //update so the mininum lies between [a, mid_point]
+            prime_lower = prime_mid; //update the derivative at the lower bracket
+        }
+
+        midpoint = (lower_lim+upper_lim)/2; //update the midpoint for the new bracket
+        prime_mid = numerical_gradient(opt_fun, midpoint, tol); //update the derivative at the midpoint
+        n_iter ++; //update the iteration counter 
+    }
+
+    struct OptResults opt_output = {opt_fun(midpoint), midpoint, n_iter, NAN, NAN}; //store the results in the opt struct
+
+    return opt_output;
+
+}   
