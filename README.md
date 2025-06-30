@@ -1,4 +1,4 @@
-# OPTimization_C
+# MINimize_C
 C library with optimization algorithms I've developed throughout my studies
 
 # Compile the code
